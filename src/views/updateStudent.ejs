@@ -1,0 +1,168 @@
+<style>
+  .new {
+    width: 500px;
+    position: relative;
+    left: 500px;
+  }
+  .error-message {
+    color: red;
+    font-size: 0.9rem;
+  }
+</style>
+
+<div class="container new">
+  <h1 class="mb-4">Edit Student</h1>
+  <form id="updateStudentForm" action="/students/<%= student._id %>?_method=PUT" method="post" novalidate>
+    <div class="mb-3">
+      <label for="name" class="form-label">Name</label>
+      <input
+        type="text"
+        class="form-control"
+        id="name"
+        name="name"
+        value="<%= student.name %>"
+        minlength="2"
+        maxlength="50"
+      />
+      <div class="error-message" id="nameError"></div>
+    </div>
+    <div class="mb-3">
+      <label for="age" class="form-label">Age</label>
+      <input
+        type="number"
+        class="form-control"
+        id="age"
+        name="age"
+        value="<%= student.age %>"
+        min="5"
+        max="100"
+      />
+      <div class="error-message" id="ageError"></div>
+    </div>
+    <div class="mb-3">
+      <label for="email" class="form-label">Email</label>
+      <input
+        type="email"
+        class="form-control"
+        id="email"
+        name="email"
+        value="<%= student.email %>"
+      />
+      <div class="error-message" id="emailError"></div>
+    </div>
+    <div class="mb-3">
+      <label for="gender" class="form-label">Gender</label>
+      <select class="form-control" id="gender" name="gender">
+        <option value="">Select Gender</option>
+        <option value="Male" <%= student.gender === 'Male' ? 'selected' : '' %>>Male</option>
+        <option value="Female" <%= student.gender === 'Female' ? 'selected' : '' %>>Female</option>
+        <option value="Other" <%= student.gender === 'Other' ? 'selected' : '' %>>Other</option>
+      </select>
+      <div class="error-message" id="genderError"></div>
+    </div>
+    <div class="mb-3">
+      <label for="grade" class="form-label">Class</label>
+      <input
+        type="number"
+        class="form-control"
+        id="grade"
+        name="grade"
+        value="<%= student.grade %>"
+        min="1"
+        max="12"
+      />
+      <div class="error-message" id="gradeError"></div>
+    </div>
+    <button type="submit" class="btn btn-warning">Update</button>
+    <a href="/students" class="btn btn-secondary">Cancel</a>
+  </form>
+</div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const form = document.getElementById("updateStudentForm");
+
+    const validateField = (field, condition, errorMessage) => {
+      const errorElement = document.getElementById(`${field.id}Error`);
+      if (!condition) {
+        field.classList.add("is-invalid");
+        field.classList.remove("is-valid");
+        errorElement.textContent = errorMessage;
+        return false;
+      } else {
+        field.classList.remove("is-invalid");
+        field.classList.add("is-valid");
+        errorElement.textContent = "";
+        return true;
+      }
+    };
+
+    const validateName = () => {
+      const name = document.getElementById("name");
+      const trimmedValue = name.value.trim();
+      const regex = /^[A-Za-z\s]+$/;
+      return validateField(
+        name,
+        trimmedValue.length >= 2 && trimmedValue.length <= 50 && regex.test(trimmedValue),
+        "contain only letters and spaces."
+      );
+    };
+
+    const validateAge = () => {
+      const age = document.getElementById("age");
+      const ageValue = parseInt(age.value, 10);
+      return validateField(
+        age,
+        !isNaN(ageValue) && ageValue >= 5 && ageValue <= 100,
+        "Age must be between 5 and 100."
+      );
+    };
+
+    const validateEmail = () => {
+      const email = document.getElementById("email");
+      const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      return validateField(
+        email,
+        regex.test(email.value.trim()),
+        "Please enter a valid email address."
+      );
+    };
+
+    const validateGender = () => {
+    const genderField = document.getElementById("gender");
+    return validateField(
+      genderField,
+      genderField.value.trim() !== "",
+      "Please select a gender."
+    );
+  };
+    const validateGrade = () => {
+      const grade = document.getElementById("grade");
+      const gradeValue = parseInt(grade.value, 10);
+      return validateField(
+        grade,
+        !isNaN(gradeValue) && gradeValue >= 1 && gradeValue <= 12,
+        "Class must be between 1 and 12."
+      );
+    };
+
+    form.addEventListener("submit", function (event) {
+      const isNameValid = validateName();
+      const isAgeValid = validateAge();
+      const isEmailValid = validateEmail();
+      const isGenderValid = validateGender();
+      const isGradeValid = validateGrade();
+
+      if (!isNameValid || !isAgeValid || !isEmailValid || !isGenderValid || !isGradeValid) {
+        event.preventDefault();
+      }
+    });
+
+    // Real-time validation
+    document.getElementById("name").addEventListener("input", validateName);
+    document.getElementById("age").addEventListener("input", validateAge);
+    document.getElementById("email").addEventListener("input", validateEmail);
+    document.getElementById("gender").addEventListener("change", validateGender);
+    document.getElementById("grade").addEventListener("input", validateGrade);
+  });
+</script>

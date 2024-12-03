@@ -1,0 +1,155 @@
+<style>
+  .new {
+    width: 500px;
+    position: relative;
+    left: 500px;
+  }
+  .error {
+    border: 1px solid red;
+  }
+  .valid {
+    border: 1px solid green;
+  }
+  .error-message {
+    color: red;
+    font-size: 0.9em;
+    margin-top: 5px;
+  }
+</style>
+
+<div class="container new">
+  <h1 class="mb-4">Create New Student</h1>
+  <form action="/students" method="POST" id="studentForm">
+    <div class="mb-3">
+      <label for="name" class="form-label">Name</label>
+      <input type="text" class="form-control" id="name" name="name"  />
+      <div id="nameError" class="error-message"></div>
+    </div>
+    <div class="mb-3">
+      <label for="age" class="form-label">Age</label>
+      <input type="number" class="form-control" id="age" name="age"  />
+      <div id="ageError" class="error-message"></div>
+    </div>
+    <div class="mb-3">
+      <label for="email" class="form-label">Email</label>
+      <input
+        type="email"
+        class="form-control"
+        id="email"
+        name="email"
+        
+      />
+      <div id="emailError" class="error-message"></div>
+    </div>
+    <div class="mb-3">
+      <label for="gender" class="form-label">Gender</label>
+      <select class="form-control" id="gender" name="gender" >
+        <option value="">Select Gender</option>
+        <option value="Male">Male</option>
+        <option value="Female">Female</option>
+        <option value="Other">Other</option>
+      </select>
+      <div id="genderError" class="error-message"></div>
+    </div>
+    <div class="mb-3">
+      <label for="grade" class="form-label">Class</label>
+      <input
+        type="number"
+        class="form-control"
+        id="grade"
+        name="grade"
+        
+      />
+      <div id="gradeError" class="error-message"></div>
+    </div>
+    <button type="submit" class="btn btn-primary">Create</button>
+    <a href="/students" class="btn btn-secondary">Cancel</a>
+  </form>
+</div>
+
+<script>
+  const form = document.getElementById("studentForm");
+
+  const validateField = (field, condition, errorMessage) => {
+    const errorElement = document.getElementById(`${field.id}Error`);
+    if (!condition) {
+      field.classList.add("error");
+      field.classList.remove("valid");
+      errorElement.textContent = errorMessage;
+      return false;
+    } else {
+      field.classList.remove("error");
+      field.classList.add("valid");
+      errorElement.textContent = "";
+      return true;
+    }
+  };
+
+  const validateName = () => {
+    const nameField = document.getElementById("name");
+    const regex = /^[A-Za-z\s]+$/; // Only letters and spaces
+    return validateField(
+      nameField,
+      regex.test(nameField.value.trim()),
+      "Name must contain only letters."
+    );
+  };
+
+  const validateAge = () => {
+      const age = document.getElementById("age");
+      const ageValue = parseInt(age.value, 10);
+      return validateField(
+        age,
+        !isNaN(ageValue) && ageValue >= 5 && ageValue <= 100,
+        "Age must be between 5 and 100."
+      );
+    };
+
+  const validateEmail = () => {
+    const emailField = document.getElementById("email");
+    const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return validateField(
+      emailField,
+      regex.test(emailField.value.trim()),
+      "Please enter a valid email address."
+    );
+  };
+
+  const validateGender = () => {
+    const genderField = document.getElementById("gender");
+    return validateField(
+      genderField,
+      genderField.value.trim() !== "",
+      "Please select a gender."
+    );
+  };
+
+  const validateGrade = () => {
+      const grade = document.getElementById("grade");
+      const gradeValue = parseInt(grade.value, 10);
+      return validateField(
+        grade,
+        !isNaN(gradeValue) && gradeValue >= 1 && gradeValue <= 12,
+        "Class must be between 1 and 12."
+      );
+    };
+
+  form.addEventListener("submit", (event) => {
+    const isNameValid = validateName();
+    const isAgeValid = validateAge();
+    const isEmailValid = validateEmail();
+    const isGenderValid = validateGender();
+    const isGradeValid = validateGrade();
+
+    if (!isNameValid || !isAgeValid || !isEmailValid || !isGenderValid || !isGradeValid) {
+      event.preventDefault(); // Prevent form submission if any field is invalid
+    }
+  });
+
+  // Real-time validation
+  document.getElementById("name").addEventListener("input", validateName);
+  document.getElementById("age").addEventListener("input", validateAge);
+  document.getElementById("email").addEventListener("input", validateEmail);
+  document.getElementById("gender").addEventListener("change", validateGender);
+  document.getElementById("grade").addEventListener("input", validateGrade);
+</script>
